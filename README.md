@@ -12,4 +12,4 @@ The files with their location we have modified in the 5g-du-dev-usrp are:
 4. **openairinterface5g-IITH/openair2/LAYER2/NR_MAC_gNB/gNB_scheduler_ulsch.c**
 5. **openairinterface5g-IITH/openair2/LAYER2/NR_MAC_gNB/gNB_scheduler_dlsch.c**
 6. **openairinterface5g-IITH/openair2/COMMON/f1ap_messages_types.h**
-7. 
+7. **openairinterface5g-IITH/openair2/GNB_APP/MACRLC_nr_paramdef.h**   wherever we added code, we just added the comment IITH, except this file MACRLC_nr_paramdef.h

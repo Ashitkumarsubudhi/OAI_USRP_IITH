@@ -1332,6 +1332,7 @@ void nr_ue_ul_scheduler(NR_UE_MAC_INST_t *mac, nr_uplink_indication_t *ul_info)
   frame_t frame_tx = ul_info->frame;
   slot_t slot_tx = ul_info->slot;
   uint32_t gNB_index = ul_info->gNB_index;
+  static int Msg3_retranmission_count=0; //add: IITH
 
   RA_config_t *ra = &mac->ra;
 
@@ -1422,6 +1423,12 @@ void nr_ue_ul_scheduler(NR_UE_MAC_INST_t *mac, nr_uplink_indication_t *ul_info)
         LOG_I(NR_MAC, "[RAPROC][%d.%d] RA-Msg3 retransmitted\n", frame_tx, slot_tx);
         // 38.321 restart the ra-ContentionResolutionTimer at each HARQ retransmission in the first symbol after the end of the Msg3
         // transmission
+        LOG_I(NR_MAC, "[RAPROC] Count of RA-Msg3 retransmitted %d, cellid: %d\n",Msg3_retranmission_count,mac->mib_ssb); //add: IITH
+        Msg3_retranmission_count++; //add: IITH
+        if(Msg3_retranmission_count==2){ //add: IITH
+          LOG_I(NR_MAC,"FBS Detected, Msg 3 Retransmissions exceeded %d, cellid: %d\n", Msg3_retranmission_count,mac->mib_ssb);  //add: IITH
+          Msg3_retranmission_count=0; //add: IITH
+        }//add: IITH
         nr_Msg3_transmitted(mac, cc_id, frame_tx, slot_tx, gNB_index);
       }
       if (ra->ra_state == nrRA_WAIT_RAR && !ra->cfra) {

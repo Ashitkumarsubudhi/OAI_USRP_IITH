@@ -39,6 +39,9 @@
 #include <executables/softmodem-common.h>
 #include "openair2/LAYER2/nr_rlc/nr_rlc_oai_api.h"
 
+//<add:IITH
+//static int rar_failed_count=0;
+
 int16_t get_prach_tx_power(NR_UE_MAC_INST_t *mac)
 {
   RA_config_t *ra = &mac->ra;
@@ -950,6 +953,8 @@ bool init_RA(NR_UE_MAC_INST_t *mac, int frame)
   // in rach-ConfigDedicated for the BWP selected for Random Access procedure
   if ((rach_Dedicated && rach_Dedicated->cfra) || pdcch_order) {
     LOG_I(MAC, "Initialization of 4-Step CFRA procedure\n");
+    //IITH
+    mac->rar_failed_count=0; //IITH
     ra->ra_type = RA_4_STEP;
     ra->cfra = true;
   } else {
@@ -1208,7 +1213,25 @@ void nr_ra_contention_resolution_failed(NR_UE_MAC_INST_t *mac)
 
 void nr_rar_not_successful(NR_UE_MAC_INST_t *mac)
 {
+
+
+
   LOG_W(MAC, "[UE %d] RAR reception failed\n", mac->ue_id);
+
+ //<add:IITH>
+  mac->rar_failed_count++;
+  LOG_W(MAC, "[UE %d] RAR reception failed count: %d\n", mac->ue_id, mac->rar_failed_count);
+  LOG_W(MAC,"mac->mib_ssb:%d\n",mac->mib_ssb);
+  if(mac->rar_failed_count == 5){
+  LOG_I(MAC, "########################################################\n");
+  LOG_I(MAC, "[UE %d] FBS Detected, RACH Retranmsissions Exceeded, cellid: %d \n", mac->ue_id, mac->mib_ssb);
+  //LOG_I(MAC, "[UE %d] FBS Detected, RLC Retranmmissions Exceeded\n", mac->ue_id);
+  mac->rar_failed_count=0;
+  LOG_I(MAC, "########################################################\n");
+  }
+
+ //<add:IITH>
+
   RA_config_t *ra = &mac->ra;
   NR_PRACH_RESOURCES_t *prach_resources = &ra->prach_resources;
   prach_resources->preamble_tx_counter++;
